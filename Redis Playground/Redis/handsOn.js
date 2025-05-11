@@ -25,7 +25,7 @@ app.get('/' , async (req, res) => {
     await client.set('weather', JSON.stringify(data));
     await client.expire('weather', 6000);
 
-    return res.json(data);
+     return res.json(data);
 });
 
 
