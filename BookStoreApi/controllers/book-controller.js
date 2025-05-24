@@ -8,8 +8,7 @@ const getAllBooks = async (req, res) => {
         const cachedBooks = await client.get('books');
         if (cachedBooks) {
             const books = JSON.parse(cachedBooks);
-            console.log("Books fetched from cache");
-            return res.status(200).json({ message: "Books fetched from cache", books });
+        return res.status(200).json({ message: "Books fetched from cache", books });
         }
 
         // If not in cache, fetch from database

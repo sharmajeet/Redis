@@ -1,7 +1,8 @@
 require("dotenv").config();
+const logger = require('./handlers/ErrorHandler.js');
+const requestLogger = require('./middleware/requestLogger.js');
 const express = require("express");
 const connectDB = require("./database/db.js");
-
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const { SwaggerTheme, SwaggerThemeNameEnum } = require('swagger-themes');
@@ -49,6 +50,8 @@ connectDB();
 
 // Middleware
 app.use(express.json());
+//logger 
+app.use(requestLogger); 
 
 // Routes
 app.use('/api/books', bookRoutes);
@@ -59,6 +62,7 @@ app.use('/api/cloudinary', cloudinaryRoutes);
 
 // Start server
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
