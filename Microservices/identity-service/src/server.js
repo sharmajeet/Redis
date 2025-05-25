@@ -1,14 +1,14 @@
-const {connect} = require("../db/connection");
+const {connect} = require("../src/db/connection");
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const logger = require("../utils/logger");
+const logger = require("../src/utils/logger");
 const {RateLimiterRedis} = require("rate-limiter-flexible")
 const {Redis} = require("ioredis");
 const {rateLimit} = require("express-rate-limit")
 const {RedisStore} = require('rate-limit-redis')
-const identityServiceRoutes = require('../routes/identity-service');
-const errorHandler = require('../middlewares/errorHandler');
+const identityServiceRoutes = require('../src/routes/identity-service');
+const errorHandler = require('../src/middlewares/errorHandler');
 
 
 const app = express();
