@@ -53,8 +53,8 @@ app.use((req, res, next) => {
 
 
 const sensistiveEndpointLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minute
-    max: 5, // limit each IP to 5 requests per windowMs
+    windowMs: 1 * 60 * 1000, // 15 minute
+    max: 15, // limit each IP to 5 requests per windowMs
     standardHeaders: true,
     legacyHeaders: false,
     handler : (req,res) =>{
@@ -68,7 +68,7 @@ const sensistiveEndpointLimiter = rateLimit({
     }),
 });
 
-// app.use('/api/auth', sensistiveEndpointLimiter); // apply limiter to whole /api/auth
+app.use('/api/auth', sensistiveEndpointLimiter); // apply limiter to whole /api/auth
 
 //routes
 app.use('/api/auth', identityServiceRoutes);

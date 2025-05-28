@@ -1,51 +1,34 @@
 const logger = require('../utils/logger');
 const Post = require('../models/Post');
+const { validateNewPost } = require('../utils/validator');
 
 const createPost = async (req, res) => {
-    try {
-        const {content ,mediaIds } = await req.postService.createPost(req.body);
-        res.status(201).json(post);
-    } catch (error) {
-        logger.error('Error while creating post:', error);
-        res.status(500).json({ success  :false, message: 'Error while creating post' });
+  try {
+    logger.info('Validating request body for creating post:', req.body);
+    const { error } = validateNewPost(req.body);
+    if (error) {
+      logger.warn('Validation error while creating post:', error.details[0].message);
+      return res.status(400).json({ success: false, message: error.details[0].message });
     }
-}
 
-const getAllPosts = async (req, res) => {
-    try {
-        const posts = await req.postService.getAllPosts();
-        res.status(200).json(posts);
-    } catch (error) {
-        logger.error('Error while fetching posts:', error);
-        res.status(500).json({ success: false, message: 'Error while fetching posts' });
-    }
-}
+    const { content, mediaIds } = req.body;
 
-const getPost = async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const post = await req.postService.getPost(postId);
-        if (!post) {
-            return res.status(404).json({ success: false, message: 'Post not found' });
-        }
-        res.status(200).json(post);
-    } catch (error) {
-        logger.error('Error while fetching post:', error);
-        res.status(500).json({ success: false, message: 'Error while fetching post' });
-    }
-}
+    const post = new Post({
+      user: req.user._id,
+      content,
+      mediaIds
+    });
 
+    await post.save();
 
-const deletePost = async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const deletedPost = await req.postService.deletePost(postId);
-        if (!deletedPost) {
-            return res.status(404).json({ success: false, message: 'Post not found' });
-        }
-        res.status(200).json({ success: true, message: 'Post deleted successfully' });
-    } catch (error) {
-        logger.error('Error while deleting post:', error);
-        res.status(500).json({ success: false, message: 'Error while deleting post' });
-    }
-}
+    logger.info('Post created successfully:', post);
+    res.status(201).json({ success: true, message: 'Post created successfully', post });
+  } catch (error) {
+    logger.error('Error while creating post:', error);
+    res.status(500).json({ success: false, message: 'Error while creating post' });
+  }
+};
+
+module.exports = {
+  createPost
+};
