@@ -1,7 +1,6 @@
 const logger = require('../utils/logger');
 
 const authenticateRequest = (req, res, next) => {
-    logger.info('Authenticating request...');
     const userId = req.headers['x-user-id'];
 
     if (!userId) {
