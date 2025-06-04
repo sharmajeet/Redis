@@ -71,7 +71,7 @@ try{
   }
 
   //now store the result in cache
-  await req.redisClient.setex(cacheKey, JSON.stringify(result), 600); 
+  await req.redisClient.setex(cacheKey, 600, JSON.stringify(result));
   logger.info('Posts fetched successfully:', result);
 
   res.status(200).json({ success: true, message: 'Posts fetched successfully', data: result });
@@ -100,7 +100,7 @@ const getPost  =async(req,res) =>{
     }
 
     //now store the post in cache
-    await redisClient.setex(cacheKey, 3600, JSON.stringify(singlePostDetailsById));
+    await req.redisClient.setex(cacheKey, 600, JSON.stringify(result));
 
     logger.info('Post fetched successfully:', singlePostDetailsById);
     res.status(200).json({ success: true, message: 'Post fetched successfully', data: singlePostDetailsById });
@@ -112,8 +112,32 @@ const getPost  =async(req,res) =>{
 }
 }
 
+const deletePost = async (req, res) => {
+  try{
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+    if (post.user.toString() !== req.user.userId) {
+      return res.status(403).json({ success: false, message: 'You are not authorized to delete this post' });
+    }
+    await post.deleteOne();
+    //invalidate the cache for this post
+    await redisClient.del(`post:${postId}`);
+    logger.info('Post deleted successfully:', postId);
+    res.status(200).json({ success: true, message: 'Post deleted successfully' });
+
+  }
+  catch (error) {
+    logger.error('Error while deleting post:', error);
+    res.status(500).json({ success: false, message: 'Error while deleting post' });
+  }
+}
+
 module.exports = {
   createPost,
   getAllPosts,
-  getPost
+  getPost,
+  deletePost
 };

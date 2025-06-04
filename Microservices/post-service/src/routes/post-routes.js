@@ -1,5 +1,5 @@
 const express = require('express');
-const {createPost,getAllPosts,getPost} = require('../controllers/postController');
+const {createPost,getAllPosts,getPost,deletePost} = require('../controllers/postController');
 const {authenticateRequest} = require('../middlewares/auth-middleware');
 const router = express.Router();
 
@@ -12,5 +12,7 @@ router.post('/create-post', createPost);
 router.get('/all-posts', getAllPosts);
 
 router.get('/:id', getPost);
+
+router.post('/delete-post/:id', deletePost);
 
 module.exports = router;
